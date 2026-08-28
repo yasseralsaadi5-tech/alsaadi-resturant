@@ -1,4 +1,4 @@
-"use client";
+
 import type { Metadata } from "next";
 import { Lalezar, Tajawal, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
