@@ -10,9 +10,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    appDir: true,   // ← هذا السطر هو الحل
-  },
+ 
 };
 
 export default nextConfig;
