@@ -1,3 +1,5 @@
+"use client";
+
 import { createClient } from "@/lib/supabase/server";
 import { OrderStatusSelect } from "@/components/admin/order-status-select";
 import type { Order, OrderItem, OrderStatus } from "@/lib/types";
