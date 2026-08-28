@@ -1,4 +1,4 @@
-"use client";
+
 import { createClient } from "@/lib/supabase/server";
 import { MenuItemForm } from "@/components/admin/menu-item-form";
 import { MenuItemRow } from "@/components/admin/menu-item-row";
