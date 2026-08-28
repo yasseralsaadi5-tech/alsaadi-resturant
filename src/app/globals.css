@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Lalezar", sans-serif;
+  --font-body: "Tajawal", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream text-charcoal dark:bg-charcoal dark:text-cream font-body transition-colors duration-300;
+}
+
+/* Signature diagonal "shaved slice" divider — echoes shawarma cut off the spit */
+.slice-divider {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 88%);
+}
+.slice-divider-reverse {
+  clip-path: polygon(0 12%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Visible keyboard focus, always */
+:focus-visible {
+  outline: 3px solid #C97A2E;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #A8242C;
+  border-radius: 8px;
+}
