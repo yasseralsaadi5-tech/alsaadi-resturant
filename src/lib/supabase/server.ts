@@ -1,10 +1,12 @@
-// تأكد من عدم وجود "use server" هنا
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
+type CookieToSet = { name: string; value: string; options?: CookieOptions };
+
+// Server-side Supabase client for use in Server Components, Route Handlers,
+// and Server Actions. Uses the public anon key only — the service role key
+// is never used here and must never be exposed to the client.
 export async function createClient() {
-  // ✅ الحل الحاسم: استدعاء ديناميكي لـ cookies لتجنب خطأ التجميع
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { cookies } = require("next/headers");
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -15,13 +17,14 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
+        setAll(cookiesToSet: CookieToSet[]) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
+            cookiesToSet.forEach(({ name, value, options }: CookieToSet) =>
               cookieStore.set(name, value, options)
             );
           } catch {
-            // تجاهل الخطأ لأن Middleware سيقوم بتحديث الجلسة
+            // Called from a Server Component without a mutable response;
+            // safe to ignore because middleware refreshes the session.
           }
         },
       },
