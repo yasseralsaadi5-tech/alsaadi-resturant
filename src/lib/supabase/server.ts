@@ -1,8 +1,10 @@
-
+// تأكد من عدم وجود "use server" هنا
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers";
 
 export async function createClient() {
+  // ✅ الحل الحاسم: استدعاء ديناميكي لـ cookies لتجنب خطأ التجميع
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { cookies } = require("next/headers");
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -19,7 +21,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Ignored because middleware refreshes sessions
+            // تجاهل الخطأ لأن Middleware سيقوم بتحديث الجلسة
           }
         },
       },
