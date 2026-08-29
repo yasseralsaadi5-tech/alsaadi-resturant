@@ -3,10 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import dynamic from "next/dynamic";
 
-const AdminSidebar = dynamic(
-  () => import("@/components/admin/sidebar").then((mod) => mod.AdminSidebar),
-  { ssr: false }
-);
+import { AdminSidebar } from "@/components/admin/sidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
