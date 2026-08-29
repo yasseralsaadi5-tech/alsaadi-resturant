@@ -1,4 +1,4 @@
-"use client";
+
 import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
