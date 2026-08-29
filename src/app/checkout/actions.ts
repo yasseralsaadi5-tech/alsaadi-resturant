@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { generateOrderNumber } from "@/lib/order-number";
 import type { CartLine } from "@/store/cart-store";
@@ -28,35 +29,38 @@ export async function createOrder(input: CheckoutInput): Promise<CheckoutResult>
 
   const supabase = await createClient();
   const orderNumber = generateOrderNumber();
+  // Generated here (not read back from the DB) so we never need to SELECT
+  // the row we just inserted. Public visitors are intentionally not allowed
+  // to read the orders table (only admins can), so relying on Postgres to
+  // hand the row back via RETURNING would fail RLS even though the INSERT
+  // itself is allowed — this avoids that entirely.
+  const orderId = randomUUID();
 
   const hasUnpriced = input.lines.some((l) => l.price === null);
   const totalAmount = hasUnpriced
     ? null
     : input.lines.reduce((sum, l) => sum + (l.price ?? 0) * l.quantity, 0);
 
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
-      order_number: orderNumber,
-      customer_name: input.customerName.trim(),
-      customer_phone: input.customerPhone.trim(),
-      customer_address: input.customerAddress.trim() || null,
-      order_type: input.orderType,
-      payment_method: input.paymentMethod,
-      payment_status: "unpaid",
-      status: "جديد",
-      notes: input.notes.trim() || null,
-      total_amount: totalAmount,
-    })
-    .select()
-    .single();
+  const { error: orderError } = await supabase.from("orders").insert({
+    id: orderId,
+    order_number: orderNumber,
+    customer_name: input.customerName.trim(),
+    customer_phone: input.customerPhone.trim(),
+    customer_address: input.customerAddress.trim() || null,
+    order_type: input.orderType,
+    payment_method: input.paymentMethod,
+    payment_status: "unpaid",
+    status: "جديد",
+    notes: input.notes.trim() || null,
+    total_amount: totalAmount,
+  });
 
-  if (orderError || !order) {
+  if (orderError) {
     return { ok: false, error: "تعذر إنشاء الطلب. حاول مرة أخرى." };
   }
 
   const orderItemsPayload = input.lines.map((l) => ({
-    order_id: order.id,
+    order_id: orderId,
     menu_item_id: l.menuItemId,
     item_name: l.name,
     unit_price: l.price,
